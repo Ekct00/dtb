@@ -2,19 +2,22 @@ import akshare as ak
 import json
 from datetime import datetime, timedelta
 
+# 全局变量，用于存储lhb.json的数据
+existing_data = {}
+
+# 初始化时读取lhb.json文件
+try:
+    with open('lhb.json', 'r') as f:
+        existing_data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    pass
+
 def get_top_list(date_str):
     result = None
-    # 先检查lhb.json文件是否存在该日期的数据
-    try:
-        with open('lhb.json', 'r') as f:
-            existing_data = json.load(f)
-            if date_str in existing_data:
-                print(f'{date_str}数据已存在，直接返回缓存数据')
-                return existing_data[date_str]
-    except FileNotFoundError:
-        pass
-    except json.JSONDecodeError:
-        pass
+    # 检查内存中是否已有该日期的数据
+    if date_str in existing_data:
+        print(f'{date_str}数据已存在，直接返回缓存数据')
+        return existing_data[date_str]
 
     try:
         # 获取指定日期的龙虎榜数据
@@ -38,7 +41,7 @@ def get_top_list(date_str):
 
 def main():
     # 设置起始日期和结束日期
-    start_date = datetime(2024, 1, 1)
+    start_date = datetime(2019, 12, 1)
     end_date = datetime.now()
     
     # 用于存储结果的字典
