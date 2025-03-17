@@ -90,5 +90,5 @@ for idx, count in enumerate(lhb_df['count']):
 plt.tight_layout()
 
 # 保存图表
-plt.savefig('market_analysis.png')
+plt.savefig(f'{start_date}-{end_date}.png')
 plt.close()
