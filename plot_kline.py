@@ -1,0 +1,94 @@
+import json
+import akshare as ak
+import pandas as pd
+import mplfinance as mpf
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # macOS系统自带的支持中文的字体
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+# 读取龙虎榜数据
+with open('lhb.json', 'r') as f:
+    lhb_data = json.load(f)
+
+# 转换日期格式并创建DataFrame
+lhb_dates = []
+lhb_counts = []
+for date_str, count in lhb_data.items():
+    # 处理日期格式
+    if '.' in date_str:
+        month, day = date_str.split('.')
+        # 根据月份判断年份
+        year = '2024' if int(month) >= 9 else '2025'
+        date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+        lhb_dates.append(date)
+        lhb_counts.append(count)
+
+lhb_df = pd.DataFrame({'date': lhb_dates, 'count': lhb_counts})
+lhb_df['date'] = pd.to_datetime(lhb_df['date'])
+lhb_df.set_index('date', inplace=True)
+
+# 获取上证指数数据
+start_date = min(lhb_df.index).strftime('%Y%m%d')
+end_date = max(lhb_df.index).strftime('%Y%m%d')
+sh_df = ak.stock_zh_index_daily(symbol="sh000001")
+
+# 处理上证指数数据
+sh_df['date'] = pd.to_datetime(sh_df['date'])
+sh_df.set_index('date', inplace=True)
+sh_df = sh_df.loc[start_date:end_date]
+
+# 创建图表
+fig = plt.figure(figsize=(15, 10))
+
+# 设置子图之间的间距
+plt.subplots_adjust(hspace=0.1)
+
+# 上方K线图
+ax1 = plt.subplot2grid((5, 1), (0, 0), rowspan=3)
+mc = mpf.make_marketcolors(up='red', down='green',
+                             edge='inherit',
+                             wick='inherit',
+                             volume='in')
+s = mpf.make_mpf_style(marketcolors=mc)
+mpf.plot(sh_df, type='candle', style=s,
+         ylabel='指数价格',
+         ax=ax1,
+         volume=False,
+         axtitle='上证指数K线图与龙虎榜数量对比')
+
+# 设置x轴标签只显示月初和月中
+ax1.xaxis.set_major_locator(plt.MaxNLocator(20))  # 限制最大刻度数
+ax1.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: sh_df.index[int(x)].strftime('%m.%d') if x >= 0 and x < len(sh_df) and (sh_df.index[int(x)].day == 1 or sh_df.index[int(x)].day == 15) else ''))
+ax1.tick_params(axis='x', rotation=45)
+
+# 在K线图上添加龙虎榜数量标注
+for idx, date in enumerate(sh_df.index):
+    if date in lhb_df.index:
+        count = lhb_df.loc[date, 'count']
+        ax1.text(idx, sh_df.loc[date, 'high'], str(count),
+                 verticalalignment='bottom',
+                 horizontalalignment='center',
+                 fontsize=8)
+
+# 下方龙虎榜数量柱状图
+ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)
+bars = lhb_df['count'].plot(kind='bar', ax=ax2, color='blue', alpha=0.7)
+ax2.set_ylabel('龙虎榜数量')
+ax2.set_xticklabels([])
+
+# 在柱状图上添加数值标注
+for idx, count in enumerate(lhb_df['count']):
+    ax2.text(idx, count, str(count),
+             verticalalignment='bottom',
+             horizontalalignment='center',
+             fontsize=8)
+
+# 调整布局
+plt.tight_layout()
+
+# 保存图表
+plt.savefig('market_analysis.png')
+plt.close()
