@@ -4,6 +4,18 @@ from datetime import datetime, timedelta
 
 def get_top_list(date_str):
     result = None
+    # 先检查lhb.json文件是否存在该日期的数据
+    try:
+        with open('lhb.json', 'r') as f:
+            existing_data = json.load(f)
+            if date_str in existing_data:
+                print(f'{date_str}数据已存在，直接返回缓存数据')
+                return existing_data[date_str]
+    except FileNotFoundError:
+        pass
+    except json.JSONDecodeError:
+        pass
+
     try:
         # 获取指定日期的龙虎榜数据
         df = ak.stock_lhb_detail_em(start_date=date_str, end_date=date_str)
@@ -17,10 +29,8 @@ def get_top_list(date_str):
         df['代码'] = df['代码'].astype(str)
         valid_prefixes = ['60', '00', '30', '68']
         df = df[df['代码'].str[:2].isin(valid_prefixes)]
-        # 打印结果
-        print(df)
         count = len(df)
-        
+        print(f'{date_str}龙虎榜数量：{count}')
         result = count
     except Exception as e:
         print(f'获取{date_str}数据失败: {str(e)}')
@@ -28,7 +38,7 @@ def get_top_list(date_str):
 
 def main():
     # 设置起始日期和结束日期
-    start_date = datetime(2024, 9, 20)
+    start_date = datetime(2024, 1, 1)
     end_date = datetime.now()
     
     # 用于存储结果的字典
@@ -41,12 +51,15 @@ def main():
         count = get_top_list(date_str)
         if count is not None:
             # 将日期格式化为 "M.D" 格式
-            formatted_date = current_date.strftime('%-m.%-d')
+            formatted_date = date_str
             result_dict[formatted_date] = count
         current_date += timedelta(days=1)
     
-    # 输出结果
-    print(json.dumps(result_dict, ensure_ascii=False, indent=2))
+    # 保存结果到文件
+    with open('lhb.json', 'w', encoding='utf-8') as f:
+        json.dump(result_dict, f, ensure_ascii=False, indent=2)
+    
+    print('数据已保存到lhb.json文件')
 
 if __name__ == '__main__':
     main()

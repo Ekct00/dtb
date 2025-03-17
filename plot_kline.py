@@ -17,14 +17,8 @@ with open('lhb.json', 'r') as f:
 lhb_dates = []
 lhb_counts = []
 for date_str, count in lhb_data.items():
-    # 处理日期格式
-    if '.' in date_str:
-        month, day = date_str.split('.')
-        # 根据月份判断年份
-        year = '2024' if int(month) >= 9 else '2025'
-        date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-        lhb_dates.append(date)
-        lhb_counts.append(count)
+    lhb_dates.append(date_str)
+    lhb_counts.append(count)
 
 lhb_df = pd.DataFrame({'date': lhb_dates, 'count': lhb_counts})
 lhb_df['date'] = pd.to_datetime(lhb_df['date'])
@@ -40,8 +34,14 @@ sh_df['date'] = pd.to_datetime(sh_df['date'])
 sh_df.set_index('date', inplace=True)
 sh_df = sh_df.loc[start_date:end_date]
 
+# 计算图表宽度
+min_date = min(lhb_df.index)
+max_date = max(lhb_df.index)
+year_diff = (max_date - min_date).days / 200
+fig_width = max(30, year_diff * 15)  # 每年15个单位宽度，最小宽度为30
+
 # 创建图表
-fig = plt.figure(figsize=(15, 10))
+fig = plt.figure(figsize=(fig_width, 10))
 
 # 设置子图之间的间距
 plt.subplots_adjust(hspace=0.1)
@@ -71,7 +71,7 @@ for idx, date in enumerate(sh_df.index):
         ax1.text(idx, sh_df.loc[date, 'high'], str(count),
                  verticalalignment='bottom',
                  horizontalalignment='center',
-                 fontsize=8)
+                 fontsize=10)
 
 # 下方龙虎榜数量柱状图
 ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)
@@ -84,7 +84,7 @@ for idx, count in enumerate(lhb_df['count']):
     ax2.text(idx, count, str(count),
              verticalalignment='bottom',
              horizontalalignment='center',
-             fontsize=8)
+             fontsize=10)
 
 # 调整布局
 plt.tight_layout()
