@@ -59,6 +59,9 @@ mpf.plot(sh_df, type='candle', style=s,
          volume=False,
          axtitle='上证指数K线图与龙虎榜数量对比')
 
+# 清空上方K线图的x轴标签
+ax1.set_xticklabels([])
+
 # 设置x轴标签只显示月初和月中
 ax1.xaxis.set_major_locator(plt.MaxNLocator(20))  # 限制最大刻度数
 ax1.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: sh_df.index[int(x)].strftime('%m.%d') if x >= 0 and x < len(sh_df) and (sh_df.index[int(x)].day == 1 or sh_df.index[int(x)].day == 15) else ''))
@@ -74,10 +77,16 @@ for idx, date in enumerate(sh_df.index):
                  fontsize=10)
 
 # 下方龙虎榜数量柱状图
-ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)
+ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)  # 恢复共享x轴
 bars = lhb_df['count'].plot(kind='bar', ax=ax2, color='blue', alpha=0.7)
 ax2.set_ylabel('龙虎榜数量')
-ax2.set_xticklabels([])
+
+# 设置下方图表的x轴标签，年初显示年份
+ax2.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: 
+    lhb_df.index[int(x)].strftime('%Y.%m.%d') if x >= 0 and x < len(lhb_df) and lhb_df.index[int(x)].day == 1 and lhb_df.index[int(x)].month == 1 else
+    lhb_df.index[int(x)].strftime('%m.%d') if x >= 0 and x < len(lhb_df) and (lhb_df.index[int(x)].day == 1 or lhb_df.index[int(x)].day == 15) else 
+    ''))
+ax2.tick_params(axis='x', rotation=45)
 
 # 在柱状图上添加数值标注
 for idx, count in enumerate(lhb_df['count']):
