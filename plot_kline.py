@@ -81,12 +81,23 @@ ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)  # 恢复共享x�
 bars = lhb_df['count'].plot(kind='bar', ax=ax2, color='blue', alpha=0.7)
 ax2.set_ylabel('龙虎榜数量')
 
-# 设置下方图表的x轴标签，年初显示年份
-ax2.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: 
-    lhb_df.index[int(x)].strftime('%Y.%m.%d') if x >= 0 and x < len(lhb_df) and lhb_df.index[int(x)].day == 1 and lhb_df.index[int(x)].month == 1 else
-    lhb_df.index[int(x)].strftime('%m.%d') if x >= 0 and x < len(lhb_df) and (lhb_df.index[int(x)].day == 1 or lhb_df.index[int(x)].day == 15) else 
-    ''))
-ax2.tick_params(axis='x', rotation=45)
+# 清除原有的x轴标签设置
+ax2.xaxis.set_major_formatter(plt.NullFormatter())
+
+# 手动添加日期标签
+for idx, date in enumerate(lhb_df.index):
+    # 检查是否为年初（1月份）
+    if date.month == 1 and (date.day <= 5):
+        label = date.strftime('%Y.%m.%d')
+    # 检查是否为月初（1-5日）或月中（13-17日）
+    elif (date.day <= 5) or (13 <= date.day <= 17):
+        label = date.strftime('%m.%d')
+    else:
+        continue  # 跳过不需要标签的日期
+        
+    # 在适当位置添加文本标签
+    ax2.text(idx, -max(lhb_df['count'])*0.1, label, 
+             rotation=45, ha='center', va='top', fontsize=8)
 
 # 在柱状图上添加数值标注
 for idx, count in enumerate(lhb_df['count']):
