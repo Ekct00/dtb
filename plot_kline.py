@@ -67,10 +67,10 @@ def plot_kline(start_date=None, end_date=None):
                                  volume='in')
     s = mpf.make_mpf_style(marketcolors=mc)
     mpf.plot(sh_df, type='candle', style=s,
-             ylabel='指数价格',
+             ylabel='Index Price',
              ax=ax1,
              volume=False,
-             axtitle='上证指数K线图与龙虎榜数量对比')
+             axtitle='Shanghai Index & LHB Count')
 
     # 清空上方K线图的x轴标签
     ax1.set_xticklabels([])
@@ -94,7 +94,7 @@ def plot_kline(start_date=None, end_date=None):
     # 筛选指定日期范围的龙虎榜数据
     lhb_df_filtered = lhb_df.loc[start_date:end_date]
     bars = lhb_df_filtered['count'].plot(kind='bar', ax=ax2, color='blue', alpha=0.7)
-    ax2.set_ylabel('龙虎榜数量')
+    ax2.set_ylabel('Long Hu Bang')
 
     # 清除原有的x轴标签设置
     ax2.xaxis.set_major_formatter(plt.NullFormatter())
