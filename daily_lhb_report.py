@@ -51,7 +51,7 @@ def send_report():
     print(title)
     print(desp)
     # 发送消息
-    # sc_send(key, title, desp)
+    sc_send(key, title, desp)
 
 if __name__ == '__main__':
     send_report()
