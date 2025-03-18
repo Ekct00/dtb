@@ -1,3 +1,4 @@
 akshare
 schedule
 python-dateutil
+requests
