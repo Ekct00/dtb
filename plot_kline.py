@@ -6,9 +6,9 @@ def plot_kline(start_date=None, end_date=None):
     import matplotlib.pyplot as plt
     from datetime import datetime
 
-    # 设置中文字体
-    plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
-    plt.rcParams['axes.unicode_minus'] = False
+    # 设置中文字体 - 使用Linux和macOS通用字体
+    plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Noto Sans CJK JP', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'SimHei', 'sans-serif']
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
     # 读取龙虎榜数据
     with open('lhb.json', 'r') as f:
