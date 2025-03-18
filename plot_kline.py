@@ -38,7 +38,15 @@ def plot_kline(start_date=None, end_date=None):
     sh_df['date'] = pd.to_datetime(sh_df['date'])
     sh_df.set_index('date', inplace=True)
     sh_df = sh_df.loc[start_date:end_date]
-
+    
+    # 设置matplotlib使用Agg后端，避免字体问题
+    import matplotlib
+    matplotlib.use('Agg')
+    
+    # 尝试使用更多可能存在的字体
+    plt.rcParams['font.sans-serif'] = ['Liberation Sans', 'DejaVu Sans', 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'WenQuanYi Micro Hei', 'SimHei', 'sans-serif']
+    # 如果字体仍有问题，可以禁用中文标题，使用英文
+    
     # 计算图表宽度
     start_dt = pd.to_datetime(start_date)
     end_dt = pd.to_datetime(end_date)
