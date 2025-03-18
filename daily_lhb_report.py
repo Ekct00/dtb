@@ -8,7 +8,6 @@ def get_recent_data():
     # 获取今天的数据
     today = datetime.now()
     date_str = today.strftime('%Y%m%d')
-    date_str = "20250317"
     count = get_top_list(date_str)
     
     # 读取历史数据
