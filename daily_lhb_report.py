@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from send import sc_send
 from stock_top_list import get_top_list
+from wecom import wecom_send
 
 def get_recent_data():
     # 获取今天的数据
@@ -45,13 +46,19 @@ def send_report():
     # 构造消息内容
     title = f"最近5个交易日龙虎榜数量（主板+双创+上涨+去重）："
     desp = ""
-    for date, count in reversed(recent_data):  # 使用reversed()倒序显示
+    for date, count in reversed(recent_data):
         desp += f"{date}: {count}只\n"
-    key = "SCT237911TGhewiKR8rjSIQaU32XnI2rhF"
+    
+    # Server酱推送
+    sc_key = "SCT237911TGhewiKR8rjSIQaU32XnI2rhF"
+    sc_send(sc_key, title, desp)
+    
+    # 企业微信推送
+    wecom_key = "f4efcc56-ab15-45b8-97a7-aabd2125efcd"
+    wecom_send(wecom_key, title, desp)
+    
     print(title)
     print(desp)
-    # 发送消息
-    sc_send(key, title, desp)
 
 if __name__ == '__main__':
     send_report()
