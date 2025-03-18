@@ -2,3 +2,6 @@ akshare
 schedule
 python-dateutil
 requests
+pandas
+mplfinance
+matplotlib
