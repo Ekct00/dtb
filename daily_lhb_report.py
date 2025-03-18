@@ -44,7 +44,7 @@ def send_report():
     
     # 构造消息内容
     title = f"龙虎榜数据统计 {datetime.now().strftime('%m.%d')}"
-    desp = "最近5个交易日龙虎榜数量（主板+双创+上涨）：\n"
+    desp = "最近5个交易日龙虎榜数量（主板+双创+上涨+去重）：\n"
     for date, count in reversed(recent_data):  # 使用reversed()倒序显示
         desp += f"{date}: {count}只\n"
     key = "SCT237911TGhewiKR8rjSIQaU32XnI2rhF"
