@@ -42,6 +42,12 @@ def send_report():
     if not recent_data:
         return
     
+    # 检查是否有今天的数据
+    today = datetime.now().strftime('%m.%d')
+    if recent_data[0][0] != today:  # recent_data是倒序的，第一个应该是今天
+        print(f"今天 {today} 没有数据，不发送消息")
+        return
+    
     # 构造消息内容
     title = f"最近5个交易日龙虎榜数量（主板+双创+上涨+去重）："
     desp = ""

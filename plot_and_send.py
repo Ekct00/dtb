@@ -4,9 +4,23 @@ from plot_kline import plot_kline
 from wecom import wecom_send, wecom_send_image
 
 def plot_and_send():
+    # 检查今天是否有数据
+    import json
+    today = datetime.now()
+    today_str = today.strftime('%Y%m%d')
+    try:
+        with open('lhb.json', 'r') as f:
+            lhb_data = json.load(f)
+        if today_str not in lhb_data:
+            print(f"今天 {today_str} 没有数据，不发送图表")
+            return
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("无法读取数据文件")
+        return
+    
     # 设置时间范围
     start_date = "20240901"
-    end_date = datetime.now().strftime('%Y%m%d')
+    end_date = today
     
     # 生成图表
     image_path = plot_kline(start_date, end_date)
