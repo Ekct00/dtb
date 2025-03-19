@@ -1,19 +1,19 @@
-name: Remote SSH Deploy
+name: Deploy 🚀
 on:
   push:
-    branches: [ main ]  # 或者你的主分支名称
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}  # 如果使用密码认证
-          # key: ${{ secrets.SSH_PRIVATE_KEY }}  # 如果使用密钥认证
-          script: |
-            cd /root/dtb
-            git pull
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: SSH Deploy
+        run: |
+          apt-get update && apt-get install -y sshpass
+          sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'cd /root/dtb && git pull'
+        env:
+          SSHPASS: ${{ secrets.PASSWORD }}
