@@ -8,6 +8,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Host Variable
+        run: |
+          if [ -n "${{ secrets.HOST }}" ]; then
+            echo "Host is set"
+          else
+            echo "Host is not set"
+            exit 1
+          fi
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -15,6 +24,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
+          debug: true
           script: |
             cd /root/dtb
             git pull
