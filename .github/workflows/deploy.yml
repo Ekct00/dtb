@@ -8,13 +8,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-        
-      - name: SSH Deploy
-        run: |
-          export SSHPASS=${{ secrets.PASSWORD }}
-          sshpass -e ssh -o "StrictHostKeyChecking=no" ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'cd /root/dtb && git pull'
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /root/dtb
+            git pull
