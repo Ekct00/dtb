@@ -13,7 +13,6 @@ jobs:
         
       - name: SSH Deploy
         run: |
-          apt-get update && apt-get install -y sshpass
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'cd /root/dtb && git pull'
         env:
           SSHPASS: ${{ secrets.PASSWORD }}
