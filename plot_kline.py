@@ -1,4 +1,4 @@
-def plot_kline(start_date=None, end_date=None):
+def plot_kline(start_date=None, end_date=None, show_ema=False):
     import json
     import akshare as ak
     import pandas as pd
@@ -91,10 +91,22 @@ def plot_kline(start_date=None, end_date=None):
 
     # 下方龙虎榜数量柱状图
     ax2 = plt.subplot2grid((5, 1), (3, 0), rowspan=2, sharex=ax1)  # 恢复共享x轴
-    # 筛选指定日期范围的龙虎榜数据
-    lhb_df_filtered = lhb_df.loc[start_date:end_date]
-    bars = lhb_df_filtered['count'].plot(kind='bar', ax=ax2, color='blue', alpha=0.7)
+    # 筛选指定日期范围的龙虎榜数据并创建副本
+    lhb_df_filtered = lhb_df.loc[start_date:end_date].copy()
+    
+    # 绘制柱状图
+    bars = ax2.bar(range(len(lhb_df_filtered)), lhb_df_filtered['count'], color='blue', alpha=0.7)
+    
+    # 如果需要显示EMA
+    if show_ema:
+        # 计算34日EMA
+        ema34 = lhb_df_filtered['count'].ewm(span=34, adjust=False).mean()
+        # 绘制EMA线
+        ax2.plot(range(len(lhb_df_filtered)), ema34, color='yellow', linewidth=1.5, label='EMA34')
+        ax2.legend()
+    
     ax2.set_ylabel('Long Hu Bang')
+    ax2.legend()
 
     # 清除原有的x轴标签设置
     ax2.xaxis.set_major_formatter(plt.NullFormatter())
@@ -132,4 +144,4 @@ def plot_kline(start_date=None, end_date=None):
     return image_path
 
 if __name__ == '__main__':
-    plot_kline()
+    plot_kline(show_ema=True)  # 默认不显示EMA
