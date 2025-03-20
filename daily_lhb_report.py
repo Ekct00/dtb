@@ -51,8 +51,8 @@ def send_report():
     # 构造消息内容
     title = f"最近5个交易日龙虎榜数量（主板+双创+上涨+去重）："
     desp = ""
-    for date, count in reversed(recent_data):
-        desp += f"{date}: {count}只\n"
+    for i, (date, count) in enumerate(reversed(recent_data)):
+        desp += f"{date}: {count}只" + ("\n" if i < len(recent_data)-1 else "")
     
     # Server酱推送
     sc_key = "SCT237911TGhewiKR8rjSIQaU32XnI2rhF"
